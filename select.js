@@ -324,9 +324,6 @@ Select.prototype.onOptionChange = function (index) {
   // update state
   this.activeIndex = index;
 
-  // update aria-activedescendant
-  this.comboEl.setAttribute('aria-activedescendant', `${this.idBase}-${index}`);
-
   // update active option styles
   const options = this.el.querySelectorAll('[role=option]');
   [...options].forEach((optionEl) => {
@@ -382,14 +379,10 @@ Select.prototype.updateMenuState = function (open, callFocus = true) {
   // update state
   this.open = open;
 
-  // update aria-expanded and styles
-  this.comboEl.setAttribute('aria-expanded', `${open}`);
   open ? this.el.classList.add('open') : this.el.classList.remove('open');
 
-  // update activedescendant
   const activeID = open ? `${this.idBase}-${this.activeIndex}` : '';
-  this.comboEl.setAttribute('aria-activedescendant', activeID);
-
+  
   if (activeID === '' && !isElementInView(this.comboEl)) {
     this.comboEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
