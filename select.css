@@ -65,25 +65,25 @@
   display: block;
 }
 
-.combo-option {
+.combo-option td {
   padding: 10px 12px 12px;
 }
 
-.combo-option:hover {
+.combo-option:hover td {
   background-color: rgb(0 0 0 / 10%);
 }
 
-.combo-option.option-current {
+.combo-option.option-current td {
   outline: 3px solid #0067b8;
   outline-offset: -3px;
 }
 
-.combo-option[aria-selected="true"] {
+.combo-option[aria-selected="true"] td {
   padding-right: 30px;
   position: relative;
 }
 
-.combo-option[aria-selected="true"]::after {
+.combo-option[aria-selected="true"] td::after {
   border-bottom: 2px solid #000;
   border-right: 2px solid #000;
   content: "";

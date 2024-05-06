@@ -18,6 +18,7 @@ function dobby(id) {return document.getElementById(id);}
 // check if element is visible in browser view port
 function isElementInView(element) {
   var bounding = element.getBoundingClientRect();
+  console.log("IsElementInView");
 
   return (
     bounding.top >= 0 &&
@@ -44,10 +45,20 @@ function maintainScrollVisibility(activeElement, scrollParent) {
   const isBelow = offsetTop + offsetHeight > scrollTop + parentOffsetHeight;
 
   if (isAbove) {
+    console.log('above');
     scrollParent.scrollTo(0, offsetTop);
   } else if (isBelow) {
+    console.log('below');
     scrollParent.scrollTo(0, offsetTop - parentOffsetHeight + offsetHeight);
-  }
+  } else console.log(`${offsetHeight} ${offsetTop}`);
+}
+
+function scrollInto(e) {
+  console.log("scrolling "+e.localName);
+  const b = e.getBoundingClientRect();
+  const h = window.innerHeight || document.documentElement.clientHeight;
+  console.log(`scrolling top=${b.top} bottom=${b.bottom} h=${h} ${e.localName}`);
+  if (b.bottom<0 || b.top>h); e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /*
@@ -70,17 +81,22 @@ moveClass(ii, i1, name) {
 
 updateMenuState(open, callFocus = true) {
   if (this.open == open);
-  else if (this.open = open) this.el.classList.add('open');
-  else {
+  else if (this.open = open) {
+    this.el.classList.add('open');
+    const index = this.i[0];
+    console.log('updateMenuState '+index);
+    // this.moveClass(0, index, 'option-current');
+    scrollInto(this.elTable.children[index]);
+  } else {
     this.el.classList.remove('open');
-    if(!isElementInView(this.elCombo)) this.elCombo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    scrollInto(this.elCombo);
     this.elCombo.focus(); // move focus back to the combobox, if needed
   }
 };
 
 selectOption() {
   // update state
-  const i = this.i[1] = this.i[0];
+  const i = this.i[0];
   this.elCombo.innerText = this.options[i]; // update displayed value
   this.moveClass(1, i, 'aria-selected');
 };
@@ -93,12 +109,13 @@ onOptionChange(index) {
     if (isScrollable(this.elTable)) maintainScrollVisibility(option, this.elTable);
     // ensure the new option is visible on screen
     // ensure the new option is in view
-    if (!isElementInView(option)) option.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    scrollInto(option);
   } else this.selectOption();
   
 };
 
 onOptionClick(index) {
+  console.log('onOptionClick>() '+index);
   this.updateMenuState(false);
   this.onOptionChange(index);
 };
@@ -130,7 +147,7 @@ onKeyDown(event) {
 
   const move =
     key == 'Home'       ? -max :
-    key == 'Last'       ?  max :
+    key == 'End'        ?  max :
     key == 'PageUp'     ?   -9 :
     key == 'PageDown'   ?    9 :
     key == 'ArrowUp'    ?   -1 :
