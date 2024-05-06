@@ -41,7 +41,7 @@ chooseMarked() {
   this.setChosen(this.marked);
 };
 
-updateMenuState(open, choose) {
+updateMenuState(open=false, choose) {
   if (this.open == open);
   else if (this.open = open) {
     this.el.classList.add('open');
@@ -55,16 +55,10 @@ updateMenuState(open, choose) {
   }
 };
 
-onComboBlur(event) {
-  logevent('blur head');
-  if (this.elTable == event.relatedTarget) return;
-  this.updateMenuState(false, true);
-};
-
 onTableBlur(event) {
   logevent('blur table');
   if (this.elCombo == event.relatedTarget) return;
-  this.updateMenuState(false);
+  this.updateMenuState();
 };
 
 onComboClick() {
@@ -84,14 +78,14 @@ onKeyDown(event) {
   if(event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const key = event.key, max = this.options.length - 1;
 
-  const move =
-    key == 'Home'       ? -max :
-    key == 'End'        ?  max :
-    key == 'PageUp'     ?   -9 :
-    key == 'PageDown'   ?    9 :
-    key == 'ArrowUp'    ?   -1 :
-    key == 'ArrowDown'  ?    1 :
-  0;
+  const move = {
+    Home:   -max,
+    End:     max,
+    PageUp:   -9,
+    PageDown:  9,
+    ArrowUp:  -1,
+    ArrowDown: 1,
+  }[key];
   if (move) {
     const index = this.open ? this.marked : this.chosen;
     this.setChosen(Math.max(0,Math.min(index+move,max)));
