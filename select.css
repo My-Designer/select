@@ -73,17 +73,17 @@
   background-color: rgb(0 0 0 / 10%);
 }
 
-.combo-option.option-current td {
+.combo-option.marked td {
   outline: 3px solid #0067b8;
   outline-offset: -3px;
 }
 
-.combo-option[aria-selected="true"] td {
+.combo-option.chosen td {
   padding-right: 30px;
   position: relative;
 }
 
-.combo-option[aria-selected="true"] td::after {
+.combo-option.chosen td::after {
   border-bottom: 2px solid #000;
   border-right: 2px solid #000;
   content: "";
