@@ -15,50 +15,9 @@ function dobby(id) {return document.getElementById(id);}
  * Helper functions
  */
 
-// check if element is visible in browser view port
-function isElementInView(element) {
-  var bounding = element.getBoundingClientRect();
-  console.log("IsElementInView");
-
-  return (
-    bounding.top >= 0 &&
-    bounding.left >= 0 &&
-    bounding.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
-    bounding.right <=
-      (window.innerWidth || document.documentElement.clientWidth)
-  );
-}
-
-// check if an element is currently scrollable
-function isScrollable(element) {
-  return element && element.clientHeight < element.scrollHeight;
-}
-
-// ensure a given child element is within the parent's visible scroll area
-// if the child is not visible, scroll the parent
-function maintainScrollVisibility(activeElement, scrollParent) {
-  const { offsetHeight, offsetTop } = activeElement;
-  const { offsetHeight: parentOffsetHeight, scrollTop } = scrollParent;
-
-  const isAbove = offsetTop < scrollTop;
-  const isBelow = offsetTop + offsetHeight > scrollTop + parentOffsetHeight;
-
-  if (isAbove) {
-    console.log('above');
-    scrollParent.scrollTo(0, offsetTop);
-  } else if (isBelow) {
-    console.log('below');
-    scrollParent.scrollTo(0, offsetTop - parentOffsetHeight + offsetHeight);
-  } else console.log(`${offsetHeight} ${offsetTop}`);
-}
 
 function scrollInto(e) {
-  console.log("scrolling "+e.localName);
-  const b = e.getBoundingClientRect();
-  const h = window.innerHeight || document.documentElement.clientHeight;
-  console.log(`scrolling top=${b.top} bottom=${b.bottom} h=${h} ${e.localName}`);
-  if (b.bottom<0 || b.top>h); e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /*
@@ -79,15 +38,16 @@ moveClass(ii, i1, name) {
   children[this.i[ii]=i1].classList.add(name);
 }
 
-updateMenuState(open, callFocus = true) {
+updateMenuState(open) {
   if (this.open == open);
   else if (this.open = open) {
     this.el.classList.add('open');
     const index = this.i[0];
     console.log('updateMenuState '+index);
-    // this.moveClass(0, index, 'option-current');
     scrollInto(this.elTable.children[index]);
   } else {
+    const index = this.i[1];
+    this.moveClass(0, index, 'option-current');
     this.el.classList.remove('open');
     scrollInto(this.elCombo);
     this.elCombo.focus(); // move focus back to the combobox, if needed
@@ -95,7 +55,6 @@ updateMenuState(open, callFocus = true) {
 };
 
 selectOption() {
-  // update state
   const i = this.i[0];
   this.elCombo.innerText = this.options[i]; // update displayed value
   this.moveClass(1, i, 'aria-selected');
@@ -103,14 +62,8 @@ selectOption() {
 
 onOptionChange(index) {
   this.moveClass(0, index, 'option-current');
-  if(this.open) {
-    const option = this.elTable.children[index];
-    // ensure the new option is in view
-    if (isScrollable(this.elTable)) maintainScrollVisibility(option, this.elTable);
-    // ensure the new option is visible on screen
-    // ensure the new option is in view
-    scrollInto(option);
-  } else this.selectOption();
+  if(this.open) scrollInto(this.elTable.children[index]);
+  else this.selectOption();
   
 };
 
@@ -142,6 +95,8 @@ onComboClick() {
 };
 
 onKeyDown(event) {
+  if(event.isComposing || event.keyCode == 229) return;
+  if(event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const key = event.key== ' ' ? 'Enter' : event.key;
   const max = this.options.length - 1;
 
