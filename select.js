@@ -56,18 +56,25 @@ updateMenuState(open=false, choose) {
 };
 
 onTableBlur(event) {
-  logevent('blur table');
-  if (this.elCombo == event.relatedTarget) return;
-  this.updateMenuState();
+  const related = this.elCombo == event.relatedTarget;
+  logevent('blur table, related='+related);
+  if (!related||!this.mousedown) this.updateMenuState(false);
 };
 
 onComboClick() {
   logevent('comboclick');
+  this.mousedown = false;
   this.updateMenuState(!this.open);
 };
 
+onMouseDown() {
+  logevent('mousedown');
+  this.mousedown = true;
+}
+
 onTableClick(event) {
   logevent('tableclick');
+  this.mousedown = false;
   this.updateMenuState(false, true)
   event.stopPropagation();
 };
@@ -89,7 +96,7 @@ onKeyDown(event) {
   if (move) {
     const index = this.open ? this.marked : this.chosen;
     this.setChosen(Math.max(0,Math.min(index+move,max)));
-  } else if(key == 'Escape') this.updateMenuState();
+  } else if(key == 'Escape') this.updateMenuState(false);
   else if(key == 'Enter') this.updateMenuState(!this.open, true);
   else return; // pass the event
 
@@ -115,6 +122,7 @@ constructor (options = []) {
   const listen = (element, event, fun) => element.addEventListener(event, fun.bind(this));
 
   listen(this.elTable, 'blur', this.onTableBlur);
+  listen(this.elCombo, 'mousedown', this.onMouseDown);
   listen(this.elCombo, 'click', this.onComboClick);
   listen(this.elTable, 'click', this.onTableClick);
   listen(this.elCombo, 'keydown', this.onKeyDown);
